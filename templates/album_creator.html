@@ -1,0 +1,59 @@
+% from config import TEMPLATE_DIR
+
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <title>Tom's Poop Uploader</title>
+    % include(TEMPLATE_DIR + "imports.html")
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="row">
+        <h1>New Album</h1>
+      </div>
+
+      <div class="row">
+
+        <div class="container well well-sm">
+          <form role="form" action='/new_album' method='POST'>
+
+            <div class="form-group">
+              <label for="title">Title:</label>
+              <input class="form-control" name="title">
+            </div>
+
+            <div class="form-group">
+              <label for="location">Location:</label>
+              <input class="form-control" name="location">
+            </div>
+
+            <div class="form-group">
+              <label for="description">Description:</label>
+              <input class="form-control" name="description">
+            </div>
+
+            <div class="form-group">
+              <label for="visibility">Visibility:</label>
+              <label class="radio-inline"><input type="radio" name="visibility" value="public">Public</label>
+              <label class="radio-inline"><input type="radio" name="visibility" value="hidden">Hidden</label>
+              <label class="radio-inline"><input type="radio" name="visibility" value="secret">Secret</label>
+            </div>
+
+            <button type="submit" class="btn btn-success btn-lg">
+            <span class="glyphicon glyphicon-new-window"></span> Create
+             </button>
+
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+
+  </body>
+
+</html>
