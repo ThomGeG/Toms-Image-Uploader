@@ -236,6 +236,8 @@ if __name__ == '__main__':
         redirect = "/register" #Redirect the user to the registration page.
         config.logger.log("Keys not found, redirecting to first time setup.")
 
+    sync() #Sync any images created whilst application wasn't open.
+
     #Initiate GUI
     webview.create_window("Tom's Image Uploader", "http://localhost:8080/" + redirect, width=800, height=600, resizable=False, fullscreen=False)
 
