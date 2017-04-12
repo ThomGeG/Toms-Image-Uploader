@@ -5,7 +5,7 @@ from   watchdog.observers import Observer
 import os
 import signal
 import threading
-from   webbrowser  import open_new_tab
+import webbrowser
 from   http.client import HTTPConnection
 
 import config
@@ -15,14 +15,18 @@ from   ImageHandler import Handler
 
 gui = Bottle()
 
+config.DEFAULT_QUICK_SHARE_ALBUM = "No Album." #Remove magic string. See updateSettings() for more information!
+
 @gui.route('/')
 def home():
 
+    #Get the albums to feature on the main 'menu'.
     albums = []
     for (directory, albumID) in config.albumPairs:
-        album = ImgurAPI.getAlbum(albumID)["data"]
+        album = ImgurAPI.getAlbum(albumID)
         album["directory"] = directory
 
+        #Make the cover image link more accessible (It's kept with the images themselves).
         for image in album["images"]:
             if image["id"] == album["cover"]:
                 album["cover_link"] = image["link"]
@@ -36,11 +40,13 @@ def home():
 @gui.route('/settings')
 def settings():
 
+    #Variables in config.py that may be changed.
     templateData = {"setting_value_pairs" : [
             ("IMGUR_CLIENT_ID",     config.IMGUR_CLIENT_ID),
             ("IMGUR_CLIENT_SECRET", config.IMGUR_CLIENT_SECRET),
             ("IMGUR_ACCESS_TOKEN",  config.IMGUR_ACCESS_TOKEN),
-            ("IMGUR_REFRESH_TOKEN", config.IMGUR_REFRESH_TOKEN )
+            ("IMGUR_REFRESH_TOKEN", config.IMGUR_REFRESH_TOKEN),
+            ("QUICK_SHARE_ALBUM",   config.QUICK_SHARE_ALBUM)
         ]
     }
 
@@ -58,6 +64,11 @@ def updateSettings():
         updated_config = updated_config.replace(config.IMGUR_ACCESS_TOKEN,  request.forms.get("IMGUR_ACCESS_TOKEN"))
         updated_config = updated_config.replace(config.IMGUR_REFRESH_TOKEN, request.forms.get("IMGUR_REFRESH_TOKEN"))
 
+        #Update the QUICK_SHARE_ALBUM.
+        #A None value (or "") is converted into config.DEFAULT_QUICK_SHARE_ALBUM, otherwise the next update will corrupt the file,
+        #replacing all characters with that new value. ("SOME TEXT".replace("", "NEW_VALUE")... Not good.)
+        updated_config = updated_config.replace(config.QUICK_SHARE_ALBUM, request.forms.get("QUICK_SHARE_ALBUM") if request.forms.get("QUICK_SHARE_ALBUM") is not None else config.DEFAULT_QUICK_SHARE_ALBUM)
+
     with open("config.py", "w") as f:
         f.write(updated_config) #Commit changes to file.
 
@@ -66,14 +77,13 @@ def updateSettings():
     config.IMGUR_CLIENT_SECRET = request.forms.get("IMGUR_CLIENT_SECRET")
     config.IMGUR_ACCESS_TOKEN  = request.forms.get("IMGUR_ACCESS_TOKEN")
     config.IMGUR_REFRESH_TOKEN = request.forms.get("IMGUR_REFRESH_TOKEN")
+    config.QUICK_SHARE_ALBUM   = request.forms.get("QUICK_SHARE_ALBUM") if request.forms.get("QUICK_SHARE_ALBUM") is not None else config.DEFAULT_QUICK_SHARE_ALBUM
 
     return seeOther("/")
 
 @gui.route('/register')
 def register():
-
-    templateData = {}
-    return template(config.TEMPLATE_DIR + 'register.html', templateData)
+    return template(config.TEMPLATE_DIR + 'register.html', {})
 
 @gui.route('/register', method="POST")
 def processClient():
@@ -91,11 +101,9 @@ def processClient():
 @gui.route('/PIN')
 def requestPIN():
 
-    import webbrowser
     webbrowser.open_new_tab("https://api.imgur.com/oauth2/authorize?client_id=" + config.IMGUR_CLIENT_ID + "&response_type=pin")
 
-    templateData = {}
-    return template(config.TEMPLATE_DIR + 'PIN.html', templateData)
+    return template(config.TEMPLATE_DIR + 'PIN.html', {})
 
 @gui.route('/PIN', method="POST")
 def processPIN():
@@ -114,7 +122,7 @@ def processPIN():
                             ).json()
 
     #Request successful, response contains keys.
-    if 'access_token' in response:
+    if "access_token" in response:
 
         #Update internal variables.
         config.IMGUR_ACCESS_TOKEN = response["access_token"]
@@ -130,24 +138,25 @@ def processPIN():
 
 @gui.route('/new_album')
 def albumWizard():
-
-    templateData = {}
-    return template(config.TEMPLATE_DIR + "album_creator.html", templateData)
+    return template(config.TEMPLATE_DIR + "album_creator.html", {})
 
 @gui.route('/new_album', method="POST")
 def addAlbum():
+    """ Add a new directory for the application to watch. """
 
+    #Collect meta-data.
     title       = request.forms.get("TITLE")
     location    = request.forms.get("LOCATION")
     description = request.forms.get("DESCRIPTION")
     visibility  = request.forms.get("VISIBILITY")
 
-    albumID = ImgurAPI.createAlbum(title=title, description=description, privacy=visibility)["data"]["id"]
+    #Create the new album.
+    albumID = ImgurAPI.createAlbum(title=title, description=description, privacy=visibility)["id"]
 
     #Add to observer.
     config.observer.schedule(event_handler=Handler('*', albumID), path=location, recursive=True)
 
-    #Add to auto-update-file
+    #Commit to memory (The auto-update-file).
     with open(config.AUTO_UPDATE_FILE, 'a') as f:
         f.write(location + " -> " + albumID + "\n")
 
@@ -155,34 +164,37 @@ def addAlbum():
 
 @gui.route('/sync')
 def sync():
-
     threading.Thread(target=syncAlbums, daemon=True).start() #Spin off the real function on a new thread.
-
     return seeOther("/")
 
 def syncAlbums():
-    """ Perform a pass of images on disk and ensure each is uploaded to Imgur. """
+    """ Perform a pass of images in local storage and ensure each is uploaded to Imgur. """
 
     from config import observer, albumPairs
 
-    #Retrieve/reference the images currently on disk.
+    #Retrieve the images currently in local storage.
     albumImages = [] #[(albumID, [images, ...]), ...]
     for (directory, albumID) in albumPairs:
         albumImages.append((albumID, [directory + "\\" + f for f in os.listdir(directory) if os.path.isfile(directory + "\\" + f) and f.split(".")[-1].lower() in config.VALID_FILE_TYPES])) #Long list comprehension that gets us all the images in the directory.
 
-    uploaded_images = 0
-    #For each album..
+    uploaded_images = [] #Remember what images we uploaded for the quick share feature.
+
     for (albumID, imageList) in albumImages:
-        #Fetch the pre-existing images online..
-        existingImages = [image["name"] for image in ImgurAPI.getAlbumImages(albumID)["data"]]
+
+        existingImages = [image["name"] for image in ImgurAPI.getAlbumImages(albumID)] #Fetch the pre-existing images online..
 
         for image in imageList:
-            if image.split("\\")[-1] not in existingImages: #and if there's ones not present.. do the thing.
-                ImgurAPI.uploadImage(image, album=albumID)
+            if image.split("\\")[-1] not in existingImages:
+                #It's not online, upload it!
+                uploaded_images.append(ImgurAPI.uploadImage(image, album=albumID))
                 config.logger.log("Uploaded: (" + albumID + ") <- " + image)
-                uploaded_images += 1
 
-    config.logger.log("Synced " + str(uploaded_images) + " image(s) on request.")
+    if config.QUICK_SHARE_ALBUM is not config.DEFAULT_QUICK_SHARE_ALBUM and len(uploaded_images) is not 0:
+        ImgurAPI.emptyAlbum(config.QUICK_SHARE_ALBUM)                                                                       #Empty the quick share album of previous images
+        ImgurAPI.addImageToAlbum(config.QUICK_SHARE_ALBUM, ','.join(map(str, [image["id"] for image in uploaded_images])))  #Add the recent images to the quick share album
+        os.system("echo " + str(ImgurAPI.getAlbum(config.QUICK_SHARE_ALBUM)["link"] + " | clip"))                           #Hand out the link to the quick share album
+
+    config.logger.log("Synced " + str(len(uploaded_images)) + " image(s) on request.")
 
 @gui.route('/static/<path:path>')
 def getResource(path):
@@ -193,6 +205,7 @@ def seeOther(url):
     """
         bottle.redirect currently not working.
         Use this as alternative, homebrew version of the same thing.
+        Constructs a '303 See Other' response and returns it to the user.
     """
     res = response.copy(cls=HTTPResponse)
     res.body = ""
@@ -203,7 +216,9 @@ def seeOther(url):
 
 if __name__ == '__main__':
 
-    redirect = ""
+    os.chdir(sys.argv[0] + "/..") #Change our working directory to where this executed file is located.
+
+    redirect = "" #Should we need to redirect the user somewhere on launch we can.
     config.logger = Logger(config.LOG_LOCATION)
 
     #Start the HTTP server that servers our "GUI"
@@ -211,8 +226,7 @@ if __name__ == '__main__':
     config.logger.log("Server started!")
 
     #Retrieve albums to sync.
-    config.albumPairs = [] #Variable to store [(directory, albumID), ...]
-
+    config.albumPairs = [] #[(directory, albumID), ...]
     with open(config.AUTO_UPDATE_FILE, 'r') as f:
         for albumPair in f.readlines():
             config.albumPairs.append([x.strip() for x in albumPair.split("->")])

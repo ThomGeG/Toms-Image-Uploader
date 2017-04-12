@@ -21,5 +21,5 @@ class Handler(PatternMatchingEventHandler):
         time.sleep(1)
 
         if(event.src_path.split('.')[1].lower() in VALID_FILE_TYPES):                                                       #If the file created was a valid type...
-            os.system("echo " + str(ImgurAPI.uploadImage(event.src_path, album=self.albumID)["data"]["link"]).strip() + " | clip")      #Upload it.
+            os.system("echo " + str(ImgurAPI.uploadImage(event.src_path, album=self.albumID)["link"]).strip() + " | clip")      #Upload it.
             logger.log("Detected and uploaded: " + event.src_path)

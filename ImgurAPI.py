@@ -41,6 +41,9 @@ def uploadImage(image, album="", title="", description=""):
 def getImage(imageID):
     return transmit(requests.get, "https://api.imgur.com/3/image/" + imageID, None)
 
+def addImageToAlbum(albumID, imageID):
+    return transmit(requests.put, "https://api.imgur.com/3/album/" + albumID + "/add", {"ids" : imageID})
+
 def deleteImage(imageID):
     return transmit(requests.delete, "https://api.imgur.com/3/image/" + imageID, None)
 
@@ -69,7 +72,7 @@ def getAlbumImages(albumID):
     return transmit(requests.get, "https://api.imgur.com/3/album/" + albumID + "/images", None)
 
 def emptyAlbum(albumID):
-    return transmit(requests.delete, "https://api.imgur.com/3/album/" + albumID + "/remove_images?ids=" + ','.join(map(str, [image["id"] for image in ImgurAPI.getAlbumImages(albumID)["data"]])), None)
+    return transmit(requests.delete, "https://api.imgur.com/3/album/" + albumID + "/remove_images?ids=" + ','.join(map(str, [image["id"] for image in getAlbumImages(albumID)])), None)
 
 def deleteAlbum(albumID, recursive=False):
 
@@ -129,4 +132,4 @@ def transmit(func, url, data):
         logger.log("Request: " + str(func) + " to " + url + " with payload " + str(data))
         logger.log("Response: " + str(response))
 
-    return response
+    return response["data"]
