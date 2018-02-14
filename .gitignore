@@ -1,3 +1,9 @@
+# Project Specifc Ignores 
+
+**/application.properties
+
+# Generic Ignores
+
 # Java
 *.class
 *.jar
