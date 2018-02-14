@@ -3,6 +3,10 @@ package main.java.model;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * Configuration class to hold the keys that Imgur's OAuth 2.0 system requires to authenticate its users.
+ * @author ThomGeG 
+ */
 @ConfigurationProperties("services")
 public class KeyProperties {
 

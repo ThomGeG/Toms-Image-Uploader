@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -14,14 +15,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import main.java.model.ResponseWrapper;
 import main.java.model.KeyProperties;
+import main.java.model.ResponseWrapper;
 
 @Service
 public class RESTService {
 	
 	private final KeyProperties keys;
-	private static final Logger log = LoggerFactory.getLogger(AlbumService.class);
+	private static final Logger log = LoggerFactory.getLogger(AlbumAPI.class);
 	
 	@Autowired
 	public RESTService(KeyProperties keys) {
@@ -41,16 +42,16 @@ public class RESTService {
 		
 	}
 	
-	public <T> ResponseWrapper<T> foo(String endpoint, HttpMethod method, ParameterizedTypeReference<ResponseWrapper<T>> type) {
+	public <T> T request(String endpoint, HttpMethod method, ParameterizedTypeReference<ResponseWrapper<T>> type) {
 		
 		RestTemplate rt = new RestTemplate();
 		HttpEntity<String> he = new HttpEntity<String>("parameters", getHeaders());
-		
 		ResponseEntity<ResponseWrapper<T>> response = rt.exchange(endpoint, method, he, type);
 		
-		log.info(response.toString());
+		log.info(method + ": " + endpoint + ", " + response.getBody());
+		log.info(response.getBody().data.toString());
 		
-		return response.getBody();
+		return response.getBody().data;
 		
 	}
 	

@@ -11,18 +11,25 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.model.KeyProperties;
-import main.java.services.AlbumService;
+import main.java.services.AccountAPI;
+import main.java.services.AlbumAPI;
 
 @SpringBootApplication
 @EnableConfigurationProperties(KeyProperties.class)
 public class Application {
 	
-	private final AlbumService albumAPI;
+	private final AlbumAPI albumAPI;
+	private final AccountAPI accountAPI;
+	
 	private static final Logger log = LoggerFactory.getLogger(Application.class);
 	
 	@Autowired
-	public Application(AlbumService albumAPI) {
+	public Application(
+			AlbumAPI albumAPI,
+			AccountAPI accountAPI
+	) {
 		this.albumAPI = albumAPI;
+		this.accountAPI = accountAPI;
 	}
 	
 	public static void main(String[] args) {	
@@ -32,7 +39,10 @@ public class Application {
 	@Bean
 	public CommandLineRunner run() throws Exception {
 		return args -> {
-			log.info(albumAPI.getAlbum("up1Gl").toString());
+			
+			accountAPI.whoAmI();
+			albumAPI.getAlbum("up1Gl");
+			
 		};
 	}
 
