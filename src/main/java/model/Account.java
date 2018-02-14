@@ -25,7 +25,7 @@ public class Account {
 	
 	@Override
 	public String toString() {
-		return String.format("Account[id='%s', url='s', created='s']", id);//, url, created);
+		return String.format("Account[id='%s', url='%s', created='%s']", id, url, created);
 	}
 
 }
