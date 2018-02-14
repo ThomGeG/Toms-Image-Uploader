@@ -10,8 +10,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import main.java.model.KeyProperties;
 import main.java.services.AlbumService;
-import main.java.services.KeyProperties;
 
 @SpringBootApplication
 @EnableConfigurationProperties(KeyProperties.class)

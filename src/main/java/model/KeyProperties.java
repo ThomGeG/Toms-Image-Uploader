@@ -1,4 +1,4 @@
-package main.java.services;
+package main.java.model;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
