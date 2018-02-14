@@ -35,4 +35,9 @@ public class KeyProperties {
 		ACCESS_TOKEN = this.ACCESS_TOKEN;
 	}
 	
+	@Override
+	public String toString() {
+		return String.format("Keys[clid='%s', secret='%s', refresh_token='%s', access_token='%s']", CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, ACCESS_TOKEN);
+	}
+	
 }
