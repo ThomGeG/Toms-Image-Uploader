@@ -13,19 +13,19 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Account {
 	
 	/** Unique identifier for the account. */
-	int id;
+	public int id;
 	/** Direct URL link to the the image. */
-	String url;
+	public String url;
 	/** Small descriptive field the user has filled about themself.*/
-	String bio;
+	public String bio;
 	/** The users reputation in its numerical form. */
-	double reputation;
+	public float reputation;
 	/** Epoch time of account creation. */
-	int created;
+	public int created;
 	
 	@Override
 	public String toString() {
-		return String.format("Account[id='%s', url='%s', created='%s']", id, url, created);
+		return String.format("Account[id='%s', url='s', created='s']", id);//, url, created);
 	}
 
 }
