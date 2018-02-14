@@ -31,7 +31,7 @@ public class Album {
 	
 	@Override
 	public String toString() { 
-		return String.format("Album[id='%s', title='%s', description='%s', link='%s', views='%s']", id, title, description, link, views);
+		return String.format("Album[id='%s', title='%s', link='%s', views='%s']", id, title, link, views);
 	}
 	
 }

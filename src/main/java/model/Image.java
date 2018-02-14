@@ -30,7 +30,7 @@ public class Image {
 	
 	@Override
 	public String toString() { 
-		return String.format("Image[id='%s', title='%s', description='%s', link='%s', views='%s']", id, title, description, link, views);
+		return String.format("Image[id='%s', title='%s', link='%s', views='%s']", id, title, link, views);
 	}
 
 }
