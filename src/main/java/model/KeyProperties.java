@@ -16,7 +16,7 @@ public class KeyProperties {
 	private String CLIENT_SECRET;
 	@Value("${REFRESH_TOKEN}")
 	private String REFRESH_TOKEN;
-	@Value("${ACCESS_TOKEN}")
+	
 	private String ACCESS_TOKEN;
 	
 	public String getClientID() {
@@ -36,7 +36,7 @@ public class KeyProperties {
 	}
 
 	public void setAccessToken(String ACCESS_TOKEN) {
-		ACCESS_TOKEN = this.ACCESS_TOKEN;
+		this.ACCESS_TOKEN = ACCESS_TOKEN;
 	}
 	
 	@Override
