@@ -34,16 +34,24 @@ public class ImageAPI {
 		this.restAPI = api;
 	}
 	
-	public Image getImage(String id) {
-		return restAPI.request("https://api.imgur.com/3/image/" + id, HttpMethod.GET, new ParameterizedTypeReference<ResponseWrapper<Image>>() {});
+	public Image getImage(String imageID) {
+		return restAPI.request("https://api.imgur.com/3/image/" + imageID, HttpMethod.GET, new ParameterizedTypeReference<ResponseWrapper<Image>>() {});
 	}
 	
-	public ResponseWrapper<?> deleteImage(String id) {
-		return restAPI.request("https://api.imgur.com/3/image/" + id, HttpMethod.DELETE, ResponseWrapper.class);
+	public Boolean deleteImage(String imageID) {
+		return restAPI.request("https://api.imgur.com/3/image/" + imageID, HttpMethod.DELETE, new ParameterizedTypeReference<ResponseWrapper<Boolean>>() {});
 	}
 	
 	public Image uploadImage(String file) {
 		return uploadImage(file, "", "", "");
+	}
+	
+	public Image uploadImage(String file, String albumID) {
+		return uploadImage(file, albumID, "", "");
+	}
+	
+	public Image uploadImage(String file, String title, String description) {
+		return uploadImage(file, "", title, description);
 	}
 	
 	public Image uploadImage(String file, String albumID, String title, String description) {

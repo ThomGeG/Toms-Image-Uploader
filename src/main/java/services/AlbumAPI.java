@@ -1,11 +1,16 @@
 package main.java.services;
 
+import java.util.Map;
+import java.util.List;
+import java.util.HashMap;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.model.Album;
+import main.java.model.Image;
 import main.java.model.ResponseWrapper;
 
 /** 
@@ -31,12 +36,29 @@ public class AlbumAPI {
 		return restAPI.request("https://api.imgur.com/3/album/" + albumID, HttpMethod.GET, new ParameterizedTypeReference<ResponseWrapper<Album>>() {});
 	}
 	
-	public ResponseWrapper<?> deleteAlbum(String albumID) {
-		return restAPI.request("https://api.imgur.com/3/album/" + albumID, HttpMethod.DELETE, ResponseWrapper.class);
+	public Boolean deleteAlbum(String albumID) {
+		return restAPI.request("https://api.imgur.com/3/album/" + albumID, HttpMethod.DELETE, new ParameterizedTypeReference<ResponseWrapper<Boolean>>() {});
 	}
 	
 	public Album createAlbum() {
+		return createAlbum("", "");
+	}
+	
+	public Album createAlbum(String title, String description) {
+		
+		Map<String, String> data = new HashMap<String, String>();
+		data.put("title",		title);
+		data.put("description", description);
+		
 		return restAPI.request("https://api.imgur.com/3/album/", HttpMethod.POST, new ParameterizedTypeReference<ResponseWrapper<Album>>() {});
+	}
+	
+	public Boolean addImages(String id, List<String> ids) {
+		return restAPI.request(String.format("https://api.imgur.com/3/album/%s/add?ids[]=" + String.join("&ids[]=", ids), id), HttpMethod.PUT, new ParameterizedTypeReference<ResponseWrapper<Boolean>>() {});
+	}
+
+	public List<Image> getAlbumImages(String id) {
+		return restAPI.request(String.format("https://api.imgur.com/3/album/%s/images", id), HttpMethod.GET, new ParameterizedTypeReference<ResponseWrapper<List<Image>>>() {});
 	}
 	
 }
