@@ -31,4 +31,12 @@ public class AlbumAPI {
 		return restAPI.request("https://api.imgur.com/3/album/" + albumID, HttpMethod.GET, new ParameterizedTypeReference<ResponseWrapper<Album>>() {});
 	}
 	
+	public ResponseWrapper<?> deleteAlbum(String albumID) {
+		return restAPI.request("https://api.imgur.com/3/album/" + albumID, HttpMethod.DELETE, ResponseWrapper.class);
+	}
+	
+	public Album createAlbum() {
+		return restAPI.request("https://api.imgur.com/3/album/", HttpMethod.POST, new ParameterizedTypeReference<ResponseWrapper<Album>>() {});
+	}
+	
 }

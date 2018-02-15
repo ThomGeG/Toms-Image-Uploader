@@ -69,7 +69,7 @@ public class RESTService {
 		
 	}
 	
-	private <C> C request(String endpoint, HttpMethod method, Class<C> c) {
+	public <C> C request(String endpoint, HttpMethod method, Class<C> c) {
 		return request(endpoint, method, new HashMap<String, String>(), c);
 	}
 	

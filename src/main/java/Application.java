@@ -10,7 +10,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import main.java.model.Album;
 import main.java.model.KeyProperties;
+import main.java.model.ResponseWrapper;
 import main.java.services.AccountAPI;
 import main.java.services.AlbumAPI;
 
@@ -41,7 +43,12 @@ public class Application {
 		return args -> {
 			
 			accountAPI.whoAmI();
-			albumAPI.getAlbum("up1Gl");
+			
+			Album a = albumAPI.createAlbum();
+			
+			//Upload an image to the album.
+			
+			albumAPI.deleteAlbum(a.id);
 			
 		};
 	}
