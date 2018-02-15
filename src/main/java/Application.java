@@ -11,16 +11,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.model.Album;
+import main.java.model.Image;
 import main.java.model.KeyProperties;
-import main.java.model.ResponseWrapper;
-import main.java.services.AccountAPI;
 import main.java.services.AlbumAPI;
+import main.java.services.ImageAPI;
+import main.java.services.AccountAPI;
 
 @SpringBootApplication
 @EnableConfigurationProperties(KeyProperties.class)
 public class Application {
 	
 	private final AlbumAPI albumAPI;
+	private final ImageAPI imageAPI;
 	private final AccountAPI accountAPI;
 	
 	private static final Logger log = LoggerFactory.getLogger(Application.class);
@@ -28,9 +30,11 @@ public class Application {
 	@Autowired
 	public Application(
 			AlbumAPI albumAPI,
+			ImageAPI imageAPI,
 			AccountAPI accountAPI
 	) {
 		this.albumAPI = albumAPI;
+		this.imageAPI = imageAPI;
 		this.accountAPI = accountAPI;
 	}
 	
@@ -45,9 +49,11 @@ public class Application {
 			accountAPI.whoAmI();
 			
 			Album a = albumAPI.createAlbum();
+			Image i = imageAPI.uploadImage("Screenshot_20180105-123128.png");
 			
-			//Upload an image to the album.
 			
+			
+			imageAPI.deleteImage(i.id);
 			albumAPI.deleteAlbum(a.id);
 			
 		};

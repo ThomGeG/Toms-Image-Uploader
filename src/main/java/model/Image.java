@@ -19,7 +19,7 @@ public class Image {
 	/** Large body of text that may accompany the image. */
 	public String description;
 	/** When the image was uploaded, epoch time. */
-	public int datetime;
+	public long datetime;
 	/** Number of times the image has been viewed. */
 	public int views;
 	/** Indication of whether the image is marked as NSFW. Defaults to null if no information is available. */
@@ -38,10 +38,10 @@ public class Image {
 	/** Image height in pixels. */
 	public int height;
 	/** Size of the image in bytes. */
-	public int size;
+	public long size;
 	
 	/** Bandwidth consumed by the image in bytes */
-	public int bandwidth;
+	public long bandwidth;
 	/** The delete hash of the image. Utilised for administration of anonymous images & albums. */
 	public String deletehash;
 	
