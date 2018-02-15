@@ -21,6 +21,15 @@ import main.java.model.KeyProperties;
 import main.java.model.ResponseWrapper;
 import main.java.model.Tokens;
 
+/** 
+ * Service class to act as the closest point of contact to the Imgur API.
+ * 
+ * @see <a href="https://api.imgur.com/">api.imgur.com</a>
+ * @see <a href="https://apidocs.imgur.com/">apidocs.imgur.com</a>
+ * 
+ * @author Tom
+ *
+ */
 @Service
 public class RESTService {
 	
@@ -32,31 +41,18 @@ public class RESTService {
 		
 		this.keys = keys;
 		
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		headers.set("Authorization", "Client-ID " + this.keys.getClientID());
-		
 		Map<String, String> payload = new HashMap<String, String>();
 		payload.put("refresh_token",	this.keys.getRefreshToken());
 		payload.put("client_id",		this.keys.getClientID());
 		payload.put("client_secret",	this.keys.getClientSecret());
 		payload.put("grant_type",		"refresh_token");
+
+		Tokens t = request("https://api.imgur.com/oauth2/token", HttpMethod.POST, payload, Tokens.class);
 		
-		RestTemplate rt = new RestTemplate();
-		HttpEntity<Map<String, String>> he = new HttpEntity<Map<String, String>>(payload, headers);
-		
-		ResponseEntity<Tokens> response = rt.exchange(
-				"https://api.imgur.com/oauth2/token", 
-				HttpMethod.POST, 
-				he, 
-				Tokens.class
-		);
-		
-		this.keys.setAccessToken(response.getBody().access_token);
+		this.keys.setAccessToken(t.access_token);
 
 	}
-	
+
 	private HttpHeaders getHeaders() {
 		
 		//Setup our headers.
@@ -64,16 +60,39 @@ public class RESTService {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		
-		headers.set("Authorization", "Bearer " + keys.getAccessToken());
-		
+		if(keys.getAccessToken() != null)
+			headers.set("Authorization", "Bearer " + keys.getAccessToken());
+		else
+			headers.set("Authorization", "Client-ID "+ keys.getClientID());
+			
 		return headers;
 		
 	}
 	
-	public <T> T request(String endpoint, HttpMethod method, ParameterizedTypeReference<ResponseWrapper<T>> type) {
+	private <C> C request(String endpoint, HttpMethod method, Class<C> c) {
+		return request(endpoint, method, new HashMap<String, String>(), c);
+	}
+	
+	public <C> C request(String endpoint, HttpMethod method, Map<String, String> data, Class<C> c) {
 		
 		RestTemplate rt = new RestTemplate();
-		HttpEntity<String> he = new HttpEntity<String>("parameters", getHeaders());
+		HttpEntity<Map<String, String>> he = new HttpEntity<Map<String, String>>(data, getHeaders());
+		ResponseEntity<C> response = rt.exchange(endpoint, method, he, c);
+		
+		log.info(method + ": " + endpoint + ", " + response.getBody());
+		
+		return response.getBody();
+		
+	}
+		
+	public <T> T request(String endpoint, HttpMethod method, ParameterizedTypeReference<ResponseWrapper<T>> type) {
+		return request(endpoint, method, new HashMap<String, String>(), type);
+	}
+	
+	public <T> T request(String endpoint, HttpMethod method, Map<String, String> data, ParameterizedTypeReference<ResponseWrapper<T>> type) {
+		
+		RestTemplate rt = new RestTemplate();
+		HttpEntity<Map<String, String>> he = new HttpEntity<Map<String, String>>(data, getHeaders());
 		ResponseEntity<ResponseWrapper<T>> response = rt.exchange(endpoint, method, he, type);
 		
 		log.info(method + ": " + endpoint + ", " + response.getBody());
