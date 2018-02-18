@@ -1,9 +1,9 @@
 package main.java.services;
 
-import java.util.Map;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Base64;
 import java.util.HashMap;
 
@@ -34,30 +34,58 @@ public class ImageAPI {
 		this.restAPI = api;
 	}
 	
+	/**
+	 * Get information about an image.
+	 * @see <a href="https://apidocs.imgur.com/#2078c7e0-c2b8-4bc8-a646-6e544b087d0f">apidocs.imgur.com</a>
+	 */
 	public Image getImage(String imageID) {
 		return restAPI.request("https://api.imgur.com/3/image/" + imageID, HttpMethod.GET, new ParameterizedTypeReference<ResponseWrapper<Image>>() {});
 	}
 	
+	/** 
+	 * Deletes an image from imgur.com
+	 * @see <a href="https://apidocs.imgur.com/#ca48883b-6964-4ab8-b87f-c274e32a970d">apidocs.imgur.com</a>
+	 * @return The boolean success flag from Imgur's response.
+	 */
 	public Boolean deleteImage(String imageID) {
 		return restAPI.request("https://api.imgur.com/3/image/" + imageID, HttpMethod.DELETE, new ParameterizedTypeReference<ResponseWrapper<Boolean>>() {});
 	}
 	
-	public Image uploadImage(String file) {
-		return uploadImage(file, "", "", "");
+	/**
+	 * Uploads an image to imgur.com
+	 * @see <a href="https://apidocs.imgur.com/#c85c9dfc-7487-4de2-9ecd-66f727cf3139">apidocs.imgur.com</a>
+	 * @return The newly uploaded image
+	 */
+	public Image uploadImage(File f) {
+		return uploadImage(f, "", "", "");
 	}
 	
-	public Image uploadImage(String file, String albumID) {
-		return uploadImage(file, albumID, "", "");
+	/**
+	 * Uploads an image to imgur.com and automatically includes it in the target album.
+	 * @see <a href="https://apidocs.imgur.com/#c85c9dfc-7487-4de2-9ecd-66f727cf3139">apidocs.imgur.com</a>
+	 * @return The newly uploaded image
+	 */
+	public Image uploadImage(File f, String albumID) {
+		return uploadImage(f, albumID, "", "");
 	}
 	
-	public Image uploadImage(String file, String title, String description) {
-		return uploadImage(file, "", title, description);
+	/**
+	 * Uploads an image to imgur.com
+	 * @see <a href="https://apidocs.imgur.com/#c85c9dfc-7487-4de2-9ecd-66f727cf3139">apidocs.imgur.com</a>
+	 * @return The newly uploaded image
+	 */
+	public Image uploadImage(File f, String title, String description) {
+		return uploadImage(f, "", title, description);
 	}
 	
-	public Image uploadImage(String file, String albumID, String title, String description) {
+	/**
+	 * Uploads an image to imgur.com and automatically includes it in the target album.
+	 * @see <a href="https://apidocs.imgur.com/#c85c9dfc-7487-4de2-9ecd-66f727cf3139">apidocs.imgur.com</a>
+	 * @return The newly uploaded image
+	 */
+	public Image uploadImage(File f, String albumID, String title, String description) {
 		
 		// Read data from the file!
-		File f = new File(file);
 		String fileData = null;
         
 		try {

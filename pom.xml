@@ -3,8 +3,11 @@
   
 	<groupId>Toms-Image-Uploader</groupId>
 	<artifactId>Toms-Image-Uploader</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	
+	<version>1.0</version>
+	<name>Toms Image Uploader</name>
 	<description>The shitty image syncing app we all love to hate.</description>
+	<url>https://github.com/thomgeg/toms-image-uploader</url>
   
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -44,5 +47,5 @@
 			</plugin>
 		</plugins>
 	</build>
-  
+	
 </project>

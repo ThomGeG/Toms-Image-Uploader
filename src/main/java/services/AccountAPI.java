@@ -27,6 +27,10 @@ public class AccountAPI {
 		this.restAPI = api;
 	}
 	
+	/** 
+	 * Retrieve standard user information about the current user.
+	 * @see <a href="https://api.imgur.com/endpoints/account#account">api.imgur.com</a>
+	 */
 	public Account whoAmI() {
 		return restAPI.request("https://api.imgur.com/3/account/me", HttpMethod.GET, new ParameterizedTypeReference<ResponseWrapper<Account>>() {});
 	}

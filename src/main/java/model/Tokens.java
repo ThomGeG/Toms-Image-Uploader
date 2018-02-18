@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Tokens {
 	
-	/** Time until token expires in ? units. Typically 3600. The Imgur API is poorly doccumented... */
+	/** Time until token expires in ? units. Typically 3600. The Imgur API is poorly documented... */
 	public int expires_in;
 	
 	/** Access token to bear and authorise our requests. */

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /** 
  * Encapsulates the response model of an Imgur Account.
- * For more information see:
- * 	@see <a href="https://api.imgur.com/models/account">https://api.imgur.com/models/account</a>
+ * 
+ * @see <a href="https://api.imgur.com/models/account">https://api.imgur.com/models/account</a>
  * 
  * @author ThomGeG
  */

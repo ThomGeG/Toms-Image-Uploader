@@ -1,8 +1,8 @@
 package main.java.services;
 
+import java.util.Map;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import main.java.model.KeyProperties;
-import main.java.model.ResponseWrapper;
 import main.java.model.Tokens;
+import main.java.model.ResponseWrapper;
+import main.java.storage.KeyProperties;
 
 /** 
  * Service class to act as the closest point of contact to the Imgur API.
@@ -91,12 +91,19 @@ public class RESTService {
 	
 	public <T> T request(String endpoint, HttpMethod method, Map<String, String> data, ParameterizedTypeReference<ResponseWrapper<T>> type) {
 		
+		log.info(method + ": " + endpoint);
+
+		for(String key : data.keySet())
+			log.info("\t" + key + ": '" + (key.compareTo("image") != 0 ? data.get(key) : "Some image data...") + "'");
+		
 		RestTemplate rt = new RestTemplate();
 		HttpEntity<Map<String, String>> he = new HttpEntity<Map<String, String>>(data, getHeaders());
 		ResponseEntity<ResponseWrapper<T>> response = rt.exchange(endpoint, method, he, type);
 		
-		log.info(method + ": " + endpoint + ", " + response.getBody());
-		log.info(response.getBody().data.toString());
+		log.info("");
+		log.info("\t" + response.getBody().toString());
+		log.info("\t" + response.getBody().data.toString());
+		log.info("");
 		
 		return response.getBody().data;
 		

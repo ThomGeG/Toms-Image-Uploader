@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /** 
  * Encapsulates the response model of an Imgur Album.
- * For more information see:
- * 	@see <a href="https://api.imgur.com/models/album">https://api.imgur.com/models/album</a>
+ * 
+ * @see <a href="https://api.imgur.com/models/album">https://api.imgur.com/models/album</a>
  * 
  * @author ThomGeG
  */
@@ -31,7 +31,7 @@ public class Album {
 	
 	/** 
 	 * A list of the images contained within the album. 
-	 * WARNING: Each image in the list is incomplete, there will be missing attributes. 
+	 * WARNING: Each image in the list is incomplete, there will be null/missing attributes. 
 	 * Be sure to use the image end-points if you require exhaustive image meta-data.
 	 */
 	public List<Image> images;
