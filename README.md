@@ -36,7 +36,7 @@ To do so, modify the following link with the client ID you received after regist
 ```
 https://api.imgur.com/oauth2/authorize?response_type=token&client_id=YOUR_CLIENT_ID_HERE
 ```
-You may be asked to log into your Imgur account if not already and authorize the application. Upon doing so you will be redirected to a non-existant page.
+You may be asked to log into your Imgur account if not already and authorize the application. Upon doing so you will be redirected to a non-existent page.
 
 ![alt](https://i.imgur.com/chKLdbY.png)
 
