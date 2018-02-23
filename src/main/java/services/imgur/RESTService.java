@@ -1,4 +1,4 @@
-package main.java.services;
+package main.java.services.imgur;
 
 import java.util.Map;
 import java.util.Arrays;
@@ -17,8 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import main.java.model.Tokens;
-import main.java.model.ResponseWrapper;
+import main.java.model.imgur.ResponseWrapper;
+import main.java.model.imgur.Tokens;
 import main.java.storage.KeyProperties;
 
 /** 

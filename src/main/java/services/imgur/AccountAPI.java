@@ -1,12 +1,13 @@
-package main.java.services;
+package main.java.services.imgur;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+
+import main.java.model.imgur.Account;
+import main.java.model.imgur.ResponseWrapper;
+
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import main.java.model.Account;
-import main.java.model.ResponseWrapper;
 
 /** 
  * Service class to handle API requests of an account related variety.

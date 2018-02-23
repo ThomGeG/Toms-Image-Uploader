@@ -1,6 +1,7 @@
 # Project Specifc Ignores 
 
 **/application.properties
+albums/
 
 # Generic Ignores
 

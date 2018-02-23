@@ -1,6 +1,7 @@
 package main.java;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
@@ -16,12 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-import main.java.model.Album;
-import main.java.model.Image;
-import main.java.model.Account;
-import main.java.services.AlbumAPI;
-import main.java.services.ImageAPI;
-import main.java.services.AccountAPI;
+import main.java.model.imgur.Account;
+import main.java.model.imgur.Album;
+import main.java.model.imgur.Image;
+import main.java.services.FileEventListener;
+import main.java.services.ImageHandler;
+import main.java.services.imgur.AccountAPI;
+import main.java.services.imgur.AlbumAPI;
+import main.java.services.imgur.ImageAPI;
 import main.java.storage.KeyProperties;
 import main.java.storage.StorageService;
 import main.java.storage.StorageProperties;
@@ -37,6 +40,8 @@ public class Application {
 	private final ImageAPI imageAPI;
 	private final AccountAPI accountAPI;
 
+	private final ImageHandler imageHandler;
+	
 	private final StorageService fileSystem;
 	
 	private static final Logger log = LoggerFactory.getLogger(Application.class);
@@ -46,11 +51,13 @@ public class Application {
 			AlbumAPI albumAPI,
 			ImageAPI imageAPI,
 			AccountAPI accountAPI,
+			ImageHandler imageHandler,
 			StorageService fileSystem
 	) {
 		this.albumAPI = albumAPI;
 		this.imageAPI = imageAPI;
 		this.accountAPI = accountAPI;
+		this.imageHandler = imageHandler;
 		this.fileSystem = fileSystem;
 	}
 	
@@ -62,7 +69,8 @@ public class Application {
 	public CommandLineRunner run() throws Exception {
 		return args -> {
 			
-			Map<String, String> localAlbums = fileSystem.getLocalAlbums();
+			Map<String, String> localAlbums = fileSystem.getLocalAlbums();					//AlbumID -> Directory
+			FileEventListener<String> fel = new FileEventListener<String>(imageHandler);
 			
 			for(String albumID : localAlbums.keySet()) {
 				
@@ -73,6 +81,7 @@ public class Application {
 				//Placeholder for images w/o a counterpart on imgur.com
 				List<File> buffer = new ArrayList<File>();
 				
+				//Start finding all the missing ones!
 				for(File f : localImages) {
 					boolean found = false;
 					for(Image i : remoteImages)
@@ -84,11 +93,18 @@ public class Application {
 						buffer.add(f);
 				}
 				
+				//Upload missing images.
 				List<Image> uploadedImages = new ArrayList<Image>();
 				for(File f : buffer)
 					uploadedImages.add(imageAPI.uploadImage(f, albumID));
 				
+				//Register this album/directory on the file listener to upload new ones!
+				fel.register(Paths.get(localAlbums.get(albumID)), albumID);
+				
 			}
+			
+			//Start the listener to upload new files!
+			new Thread(fel).start();
 			
 		};
 	}

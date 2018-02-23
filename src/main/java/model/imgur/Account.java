@@ -1,4 +1,4 @@
-package main.java.model;
+package main.java.model.imgur;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
