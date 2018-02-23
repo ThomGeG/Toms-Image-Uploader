@@ -21,7 +21,7 @@ If you do not have an imgur account you can sign up for one at: [imgur.com/regis
 
 ### Registering your application
 
-If you do not have a registered application you must sign up for one at: [api.imgur.com/oauth2/addclient](https://api.imgur.com/oauth2/addclient)*<br>
+If you do not have a registered application you must sign up for one at: [api.imgur.com/oauth2/addclient](https://api.imgur.com/oauth2/addclient)<br>
 
 Simply fill out the form with the required information and ignore fields related to Authorization type and callback as they are unneccessary to the execution of this program.<br>
 
