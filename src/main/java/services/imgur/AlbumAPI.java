@@ -15,7 +15,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /** 
- * Service class to handle API requests of an account related variety.
+ * Service class to handle API requests of an albums related variety.
  * 
  * @see <a href="https://api.imgur.com/endpoints/album">api.imgur.com/endpoints/album</a>
  * @see <a href="https://apidocs.imgur.com/#3606f862-8281-48f1-b0f7-49a5f77da0e1">apidocs.imgur.com</a>

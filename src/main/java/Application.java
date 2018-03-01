@@ -17,14 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-import main.java.model.imgur.Account;
-import main.java.model.imgur.Album;
 import main.java.model.imgur.Image;
 import main.java.services.FileEventListener;
 import main.java.services.ImageHandler;
-import main.java.services.imgur.AccountAPI;
-import main.java.services.imgur.AlbumAPI;
-import main.java.services.imgur.ImageAPI;
+import main.java.services.imgur.ImgurAPI;
 import main.java.storage.KeyProperties;
 import main.java.storage.StorageService;
 import main.java.storage.StorageProperties;
@@ -36,9 +32,7 @@ import main.java.storage.StorageProperties;
 })
 public class Application {
 	
-	private final AlbumAPI albumAPI;
-	private final ImageAPI imageAPI;
-	private final AccountAPI accountAPI;
+	private final ImgurAPI imgur;
 
 	private final ImageHandler imageHandler;
 	
@@ -48,15 +42,11 @@ public class Application {
 	
 	@Autowired
 	public Application(
-			AlbumAPI albumAPI,
-			ImageAPI imageAPI,
-			AccountAPI accountAPI,
+			ImgurAPI imgur,
 			ImageHandler imageHandler,
 			StorageService fileSystem
 	) {
-		this.albumAPI = albumAPI;
-		this.imageAPI = imageAPI;
-		this.accountAPI = accountAPI;
+		this.imgur = imgur;
 		this.imageHandler = imageHandler;
 		this.fileSystem = fileSystem;
 	}
@@ -75,7 +65,7 @@ public class Application {
 			for(String albumID : localAlbums.keySet()) {
 				
 				//Acquire our images for comparison.
-				List<Image> remoteImages = albumAPI.getAlbumImages(albumID);						//Images hosted on imgur.com
+				List<Image> remoteImages = imgur.albums.getAlbumImages(albumID);						//Images hosted on imgur.com
 				Collection<File> localImages = fileSystem.getLocalImages(localAlbums.get(albumID)); //Images on the local file system.
 				
 				//Placeholder for images w/o a counterpart on imgur.com
@@ -96,7 +86,7 @@ public class Application {
 				//Upload missing images.
 				List<Image> uploadedImages = new ArrayList<Image>();
 				for(File f : buffer)
-					uploadedImages.add(imageAPI.uploadImage(f, albumID));
+					uploadedImages.add(imgur.images.uploadImage(f, albumID));
 				
 				//Register this album/directory on the file listener to upload new ones!
 				fel.register(Paths.get(localAlbums.get(albumID)), albumID);
@@ -105,7 +95,7 @@ public class Application {
 			
 			//Start the listener to upload new files!
 			new Thread(fel).start();
-			
+
 		};
 	}
 
