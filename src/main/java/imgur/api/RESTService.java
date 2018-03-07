@@ -1,4 +1,4 @@
-package main.java.services.imgur;
+package main.java.imgur.api;
 
 import java.util.Map;
 import java.util.Arrays;
@@ -17,8 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import main.java.model.imgur.ResponseWrapper;
-import main.java.model.imgur.Tokens;
+import main.java.imgur.model.Tokens;
+import main.java.imgur.model.ResponseWrapper;
 import main.java.storage.KeyProperties;
 
 /** 
@@ -31,7 +31,7 @@ import main.java.storage.KeyProperties;
  *
  */
 @Service
-public class RESTService {
+class RESTService {
 	
 	private final KeyProperties keys;
 	private static final Logger log = LoggerFactory.getLogger(RESTService.class);
@@ -41,18 +41,24 @@ public class RESTService {
 		
 		this.keys = keys;
 		
+		//KeyProperties doesn't store the access token between executions, so we need a new one!
+		
+		//Setup our payload containing the necessary data
 		Map<String, String> payload = new HashMap<String, String>();
 		payload.put("refresh_token",	this.keys.getRefreshToken());
 		payload.put("client_id",		this.keys.getClientID());
 		payload.put("client_secret",	this.keys.getClientSecret());
 		payload.put("grant_type",		"refresh_token");
 
+		//Request the new token(s).
 		Tokens t = request("https://api.imgur.com/oauth2/token", HttpMethod.POST, payload, Tokens.class);
 		
+		//:D
 		this.keys.setAccessToken(t.access_token);
 
 	}
 
+	/** Helper method to reduce some boilerplate configuration of the request headers. */
 	private HttpHeaders getHeaders() {
 		
 		//Setup our headers.
@@ -68,11 +74,29 @@ public class RESTService {
 		return headers;
 		
 	}
-	
+
+	/**
+	 * Makes a request to the specified API end-point using the specified HTTP method (GET, POST, DELETE, etc.).
+	 * This function various from other overloaded methods in that it is for end-points that do <b>not</b> feature a response wrapper, such as when renewing tokens.<br>
+	 * 
+	 * <br>This function requires a class, <i>C</i>, to be passed to it such as below:<br>
+	 * {@code request("https://api.imgur.com/oauth2/token", HttpMethod.POST, Tokens.class);}
+	 * 
+	 * @param <C> Class/type of the expected response type/model, such as {@link main.java.imgur.model.Album}, {@link main.java.imgur.model.Image} or even just {@code Boolean}.
+	 */
 	public <C> C request(String endpoint, HttpMethod method, Class<C> c) {
 		return request(endpoint, method, new HashMap<String, String>(), c);
 	}
 	
+	/**
+	 * Makes a request to the specified API end-point using the specified HTTP method (GET, POST, DELETE, etc.).
+	 * This function various from other overloaded methods in that it is for end-points that do <b>not</b> feature a response wrapper, such as when renewing tokens.<br>
+	 *
+	 * <br>This function requires a class, <i>C</i>, to be passed to it such as below:<br>
+	 * {@code request("https://api.imgur.com/oauth2/token", HttpMethod.POST, payload, Tokens.class);}
+	 *
+	 * @param <C> Class/type of the expected response type/model, such as {@link main.java.imgur.model.Album}, {@link main.java.imgur.model.Image} or even just {@code Boolean}.
+	 */
 	public <C> C request(String endpoint, HttpMethod method, Map<String, String> data, Class<C> c) {
 		
 		RestTemplate rt = new RestTemplate();
@@ -84,11 +108,29 @@ public class RESTService {
 		return response.getBody();
 		
 	}
-		
+	
+	/**
+	 * Makes a request to the specified API end-point using the specified HTTP method (GET, POST, DELETE, etc.).
+	 * This function various from other overloaded methods in that it is for end-points that <b>do</b> feature a response wrapper.<br>
+	 *
+	 * <br>This function requires a parameterised type reference to be passed to it, such as seen below: 
+	 * <pre>{@code request("https://api.imgur.com/3/image/" + imageID, HttpMethod.GET, new ParameterizedTypeReference<ResponseWrapper<Image>>() {});}</pre>
+	 *
+	 * @param <T> Class/type of the expected response type/model, such as {@link main.java.imgur.model.Album}, {@link main.java.imgur.model.Image} or even just {@code Boolean}.
+	 */
 	public <T> T request(String endpoint, HttpMethod method, ParameterizedTypeReference<ResponseWrapper<T>> type) {
 		return request(endpoint, method, new HashMap<String, String>(), type);
 	}
 	
+	/**
+	 * Makes a request to the specified API end-point using the specified HTTP method (GET, POST, DELETE, etc.).
+	 * This function various from other overloaded methods in that it is for end-points that <b>do</b> feature a response wrapper.<br>
+	 *
+	 * <br>This function requires a parameterised type reference to be passed to it, such as seen below: 
+	 * <pre>{@code request("https://api.imgur.com/3/image/" + imageID, HttpMethod.GET, new ParameterizedTypeReference<ResponseWrapper<Image>>() {});}</pre>
+	 *
+	 * @param <T> Class/type of the expected response type/model, such as {@link main.java.imgur.model.Album}, {@link main.java.imgur.model.Image} or even just {@code Boolean}.
+	 */
 	public <T> T request(String endpoint, HttpMethod method, Map<String, String> data, ParameterizedTypeReference<ResponseWrapper<T>> type) {
 		
 		log.info(method + ": " + endpoint);

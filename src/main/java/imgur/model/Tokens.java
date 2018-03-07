@@ -1,11 +1,13 @@
-package main.java.model.imgur;
+package main.java.imgur.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /** 
- * Encapsulates the response model of an Imgur Token request.
- * For more information see:
- * 	@see <a href="https://api.imgur.com/oauth2#refresh_tokens">api.imgur.com/oath2</a>
+ * Encapsulates the response model of an imgur Token request.<br>
+ * This model's sole purpose is requesting new access tokens.<br>
+ * Do not worry about storing the refresh_token persistently; it has not changed.
+ * 
+ * @see <a href="https://api.imgur.com/oauth2#refresh_tokens">api.imgur.com/oath2#refresh_tokens</a>
  * 
  * @author ThomGeG
  */

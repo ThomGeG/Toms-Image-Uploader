@@ -17,10 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-import main.java.model.imgur.Image;
+import main.java.imgur.api.ImgurAPI;
+import main.java.imgur.model.Image;
 import main.java.services.FileEventListener;
 import main.java.services.ImageHandler;
-import main.java.services.imgur.ImgurAPI;
 import main.java.storage.KeyProperties;
 import main.java.storage.StorageService;
 import main.java.storage.StorageProperties;
@@ -32,10 +32,8 @@ import main.java.storage.StorageProperties;
 })
 public class Application {
 	
-	private final ImgurAPI imgur;
-
-	private final ImageHandler imageHandler;
-	
+	private final ImgurAPI imgur;				//Facade to the imgur API.
+	private final ImageHandler imageHandler;	
 	private final StorageService fileSystem;
 	
 	private static final Logger log = LoggerFactory.getLogger(Application.class);

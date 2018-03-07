@@ -1,10 +1,10 @@
-package main.java.services.imgur;
+package main.java.imgur.api;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
-import main.java.model.imgur.Account;
-import main.java.model.imgur.ResponseWrapper;
+import main.java.imgur.model.Account;
+import main.java.imgur.model.ResponseWrapper;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.beans.factory.annotation.Autowired;

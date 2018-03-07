@@ -1,4 +1,4 @@
-package main.java.services.imgur;
+package main.java.imgur.api;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,8 +12,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
-import main.java.model.imgur.Image;
-import main.java.model.imgur.ResponseWrapper;
+import main.java.imgur.model.Image;
+import main.java.imgur.model.ResponseWrapper;
 
 /** 
  * Service class to handle API requests of related to images.

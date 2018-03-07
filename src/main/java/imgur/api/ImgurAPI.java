@@ -1,14 +1,14 @@
-package main.java.services.imgur;
+package main.java.imgur.api;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Service class to dadkalkj.
+ * Wrapper/Facade to bring all imgur API's under one roof.
  * 
- * @see main.java.services.imgur.AlbumAPI
- * @see main.java.services.imgur.ImageAPI
- * @see main.java.services.imgur.AccountAPI
+ * @see main.java.imgur.api.AlbumAPI
+ * @see main.java.imgur.api.ImageAPI
+ * @see main.java.imgur.api.AccountAPI
  * 
  * @see <a href="https://api.imgur.com/">api.imgur.com</a>
  * @see <a href="https://apidocs.imgur.com/">apidocs.imgur.com</a>

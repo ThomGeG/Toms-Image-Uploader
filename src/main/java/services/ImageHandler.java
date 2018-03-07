@@ -5,10 +5,14 @@ import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import main.java.services.imgur.ImageAPI;
+import main.java.imgur.api.ImageAPI;
 
 /**
- * Simple strategy for uploading created images.
+ * An implementation of the FileEventHandler class.
+ * This strategy simply uploads created images to their corresponding album.
+ * 
+ * @see main.java.services.FileEventHandler
+ * 
  * @author Tom
  */
 @Service

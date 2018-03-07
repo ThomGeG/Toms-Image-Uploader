@@ -1,4 +1,4 @@
-package main.java.services.imgur;
+package main.java.imgur.api;
 
 import java.util.Map;
 import java.util.List;
@@ -7,9 +7,9 @@ import java.util.HashMap;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
-import main.java.model.imgur.Album;
-import main.java.model.imgur.Image;
-import main.java.model.imgur.ResponseWrapper;
+import main.java.imgur.model.Album;
+import main.java.imgur.model.Image;
+import main.java.imgur.model.ResponseWrapper;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
