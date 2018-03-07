@@ -61,4 +61,4 @@ From here you should be able to simply run or package the application like you w
 
 ## See also
  - [github.com/ThomGeG/Toms-Image-Uploader/tree/Python](https://github.com/ThomGeG/Toms-Image-Uploader/tree/Python) - A deprecated Python version of this program.
- - [api.imgur.com](https://api.imgur.com/) - The offcial API documentation that this application utilizes.
+ - [api.imgur.com](https://api.imgur.com/) - The official API documentation that this application utilizes.
