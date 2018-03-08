@@ -1,4 +1,4 @@
-package main.java.services;
+package main.java.services.io;
 
 import java.nio.file.Path;
 
@@ -6,7 +6,7 @@ import java.nio.file.Path;
  * Interface for implementation of strategies with the FileEventListener.
  * Separates action logic from listening logic.
  * 
- * @see main.java.services.FileEventListener
+ * @see main.java.services.io.FileEventListener
  *
  * @param <T> Data-type of associated data.
  * @author Tom

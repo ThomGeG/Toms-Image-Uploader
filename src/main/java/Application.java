@@ -1,8 +1,9 @@
 package main.java;
 
 import java.io.File;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Map;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,10 +20,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 import main.java.imgur.api.ImgurAPI;
 import main.java.imgur.model.Image;
-import main.java.services.FileEventListener;
-import main.java.services.ImageHandler;
-import main.java.storage.KeyProperties;
-import main.java.storage.StorageService;
+import main.java.services.io.FileEventListener;
+import main.java.services.io.ImageUploadHandler;
+import main.java.storage.AlbumStorageService;
+import main.java.storage.keys.KeyProperties;
 import main.java.storage.StorageProperties;
 
 @SpringBootApplication
@@ -32,20 +33,12 @@ import main.java.storage.StorageProperties;
 })
 public class Application {
 	
-	private final ImgurAPI imgur;				//Facade to the imgur API.
-	private final ImageHandler imageHandler;	
-	private final StorageService fileSystem;
+	private final AlbumStorageService fileSystem;
 	
 	private static final Logger log = LoggerFactory.getLogger(Application.class);
 	
 	@Autowired
-	public Application(
-			ImgurAPI imgur,
-			ImageHandler imageHandler,
-			StorageService fileSystem
-	) {
-		this.imgur = imgur;
-		this.imageHandler = imageHandler;
+	public Application(AlbumStorageService fileSystem) {
 		this.fileSystem = fileSystem;
 	}
 	
@@ -53,17 +46,17 @@ public class Application {
 		SpringApplication.run(Application.class);
 	}
 	
+	/** Push any/all local images that may have been created whilst the application wasn't running to imgur. */
 	@Bean
-	public CommandLineRunner run() throws Exception {
+	public CommandLineRunner localToRemote(ImgurAPI imgur) {
 		return args -> {
 			
-			Map<String, String> localAlbums = fileSystem.getLocalAlbums();					//AlbumID -> Directory
-			FileEventListener<String> fel = new FileEventListener<String>(imageHandler);
+			Map<String, Path> localAlbums = fileSystem.albums;
 			
 			for(String albumID : localAlbums.keySet()) {
 				
 				//Acquire our images for comparison.
-				List<Image> remoteImages = imgur.albums.getAlbumImages(albumID);						//Images hosted on imgur.com
+				List<Image> remoteImages = imgur.albums.getAlbumImages(albumID);					//Images hosted on imgur.com
 				Collection<File> localImages = fileSystem.getLocalImages(localAlbums.get(albumID)); //Images on the local file system.
 				
 				//Placeholder for images w/o a counterpart on imgur.com
@@ -86,9 +79,21 @@ public class Application {
 				for(File f : buffer)
 					uploadedImages.add(imgur.images.uploadImage(f, albumID));
 				
+			}
+		};
+	}
+	
+	/** Initialises the FileEventListener that monitors for file/image creation events and uploads the corresponding file. */
+	@Bean
+	public CommandLineRunner initiateListener(ImgurAPI imgur, ImageUploadHandler imageHandler) throws Exception {
+		return args -> {
+			
+			Map<String, Path> localAlbums = fileSystem.albums;					//AlbumID -> Directory
+			FileEventListener<String> fel = new FileEventListener<String>(imageHandler);
+			
+			for(String albumID : localAlbums.keySet()) {
 				//Register this album/directory on the file listener to upload new ones!
-				fel.register(Paths.get(localAlbums.get(albumID)), albumID);
-				
+				fel.register(localAlbums.get(albumID), albumID);
 			}
 			
 			//Start the listener to upload new files!

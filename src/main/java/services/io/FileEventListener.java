@@ -1,4 +1,4 @@
-package main.java.services;
+package main.java.services.io;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ import java.util.HashMap;
  * A small class for listening for file events on the local file system (Creation, deletion and modification).
  * Utilises a strategy pattern to separate action logic from listener logic.
  * 
- * @see main.java.services.FileEventHandler
+ * @see main.java.services.io.FileEventHandler
  * @param <T> Data-type of directory specific data you want associated with the directory.
  * 
  * @author Tom
@@ -56,15 +56,21 @@ public class FileEventListener<T> implements Runnable {
 	
 		data.put(key, datum);
 		paths.put(key, directory);
+		
+		log.info("Registered w/ " + feh.getClass() +": ");
+		log.info("\t" + directory.toString());
+		log.info("\t" + datum.toString());
         
     }
     
 	/**
 	 * Initiates the listener.<br>
-	 * <b>WARNING</b>: This will lock the thread. Ensure you aren't using the main thread if you plan on using it.
+	 * <b>WARNING</b>: This will lock the thread. Ensure you aren't using the main thread if you plan on executing more logic on it.
 	 */
 	public void run() {
     	
+		log.info("File listener initiated!");
+		
 		while(true) {
     		
 			//Retrieve the triggered key...
@@ -88,7 +94,8 @@ public class FileEventListener<T> implements Runnable {
 				Kind<?> kind = event.kind();
 
 				//Assemble our complete absolute path.
-				Path filename = ((WatchEvent<Path>) event).context();	//.context only gives the filename and file-type, no directories...
+				@SuppressWarnings("unchecked")
+				Path filename = ((WatchEvent<Path>) event).context();	//.context only gives the filename and file-type (no directory)...
 				Path completePath = directory.resolve(filename);		//...Use the paths/directories we stored during registry to complete the path. 
                 
 				//Log it!

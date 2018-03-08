@@ -18,8 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import main.java.imgur.model.Tokens;
+import main.java.storage.keys.KeyProperties;
 import main.java.imgur.model.ResponseWrapper;
-import main.java.storage.KeyProperties;
 
 /** 
  * Service class to act as the closest point of contact to the Imgur API.

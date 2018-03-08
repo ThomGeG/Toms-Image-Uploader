@@ -1,9 +1,9 @@
-package main.java.services;
+package main.java.services.io;
 
 import java.nio.file.Path;
 
+import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import main.java.imgur.api.ImageAPI;
 
@@ -11,17 +11,17 @@ import main.java.imgur.api.ImageAPI;
  * An implementation of the FileEventHandler class.
  * This strategy simply uploads created images to their corresponding album.
  * 
- * @see main.java.services.FileEventHandler
+ * @see main.java.services.io.FileEventHandler
  * 
  * @author Tom
  */
-@Service
-public class ImageHandler implements FileEventHandler<String> {
+@Component
+public class ImageUploadHandler implements FileEventHandler<String> {
 	
-	private final ImageAPI imageAPI;
+	private ImageAPI imageAPI;
 	
 	@Autowired
-	public ImageHandler(ImageAPI imageAPI) {
+	public ImageUploadHandler(ImageAPI imageAPI) {
 		this.imageAPI = imageAPI;
 	}
 
@@ -33,7 +33,6 @@ public class ImageHandler implements FileEventHandler<String> {
 	@Override
 	public void deleted(Path p, String albumID) {
 		//Do nothing.
-
 	}
 
 	@Override
